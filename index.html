@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Цели и задачи (FIX)</title>
+  <title>Цели и задачи (FIX 100%)</title>
   <style>
     body { font-family: system-ui, -apple-system, sans-serif; background-color: #f0f2f5; color: #333; padding: 20px; }
     .container { max-width: 600px; margin: 0 auto; }
@@ -100,7 +100,7 @@
   </div>
 
   <script>
-    console.log("✅ Скрипт запущен. Начинаем работу...");
+    console.log("✅ Скрипт запущен. Версия без шаблонных строк.");
 
     let goals = JSON.parse(localStorage.getItem('goals')) || [];
 
@@ -166,26 +166,50 @@
       }
 
       goals.forEach(goal => {
+        // Создаем элементы вручную, чтобы избежать проблем с кавычками
         const card = document.createElement('div');
         card.className = 'goal-card';
-        
+
         const periodText = goal.period === 'day' ? 'День' : goal.period === 'week' ? 'Неделя' : 'Месяц';
         const priorityText = goal.priority === 'low' ? 'Низкий' : goal.priority === 'high' ? 'Высокий' : 'Средний';
+
+        // --- ГЛАВНОЕ ИЗМЕНЕНИЕ ЗДЕСЬ ---
+        // Мы не используем innerHTML с шаблонными строками.
+        // Мы создаем элементы и вставляем текст через textContent.
         
-        // ГЛАВНОЕ МЕСТО: Обратные кавычки должны быть именно такими: ` ... `
-        // Если тут стоят обычные кавычки, будет ошибка SyntaxError в консоли
-        card.innerHTML = `
-          <div class="goal-info">
-            <h4>\${goal.title}</h4>
-            <div class="goal-meta">
-              <span>Приоритет: ${priorityText}</span> • <span>Период: ${periodText}</span>
-            </div>
-          </div>
-          <div class="actions">
-            <button class="btn-complete" onclick="toggleComplete(${goal.id})">${goal.completed ? 'Активна' : 'Готово'}</button>
-            <button class="btn-delete" onclick="deleteGoal(\${goal.id})">Удалить</button>
-          </div>
-        `;
+        const infoDiv = document.createElement('div');
+        infoDiv.className = 'goal-info';
+
+        const titleH4 = document.createElement('h4');
+        titleH4.textContent = goal.title; // <-- Безопасно вставляет текст
+
+        const metaDiv = document.createElement('div');
+        metaDiv.className = 'goal-meta';
+        metaDiv.textContent = `Приоритет: ${priorityText} • Период: ${periodText}`;
+
+        infoDiv.appendChild(titleH4);
+        infoDiv.appendChild(metaDiv);
+
+        // Кнопки
+        const actionsDiv = document.createElement('div');
+        actionsDiv.className = 'actions';
+
+        const btnComplete = document.createElement('button');
+        btnComplete.className = 'btn-complete';
+        btnComplete.textContent = goal.completed ? 'Активна' : 'Готово';
+        btnComplete.onclick = () => toggleComplete(goal.id);
+
+        const btnDelete = document.createElement('button');
+        btnDelete.className = 'btn-delete';
+        btnDelete.textContent = 'Удалить';
+        btnDelete.onclick = () => deleteGoal(goal.id);
+
+        actionsDiv.appendChild(btnComplete);
+        actionsDiv.appendChild(btnDelete);
+
+        // Собираем карточку
+        card.appendChild(infoDiv);
+        card.appendChild(actionsDiv);
 
         if (goal.completed) {
           completedList.appendChild(card);
