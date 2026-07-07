@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Цели и задачи (FIX)</title>
+  <style>
+    body { font-family: system-ui, -apple-system, sans-serif; background-color: #f0f2f5; color: #333; padding: 20px; }
+    .container { max-width: 600px; margin: 0 auto; }
+    .card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 20px; }
+    h2 { margin-top: 0; color: #2c3e50; }
+    
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    select, input[type="text"] { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; }
+    
+    .form-group { margin-bottom: 15px; }
+    button { padding: 12px; background-color: #3498db; color: white; border: none; border-radius: 6px; cursor: pointer; width: 100%; font-size: 16px; }
+    button:hover { background-color: #2980b9; }
+    
+    .goal-card { background: #fff; border: 1px solid #eee; padding: 15px; border-radius: 8px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+    .goal-info h4 { margin: 0 0 5px 0; color: #2c3e50; }
+    .goal-meta { font-size: 0.85em; color: #7f8c8d; }
+    
+    .actions { display: flex; gap: 8px; }
+    .btn-complete { background-color: #2ecc71; padding: 8px 16px; border-radius: 4px; color: white; border: none; cursor: pointer; }
+    .btn-delete { background-color: #e74c3c; padding: 8px 16px; border-radius: 4px; color: white; border: none; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Цели и задачи</h2>
+
+    <div class="card">
+      <h3>Фильтры</h3>
+      <div class="grid-2">
+        <div class="form-group">
+          <label>Период</label>
+          <select id="filter-period">
+            <option value="all">Все периоды</option>
+            <option value="day">День</option>
+            <option value="week">Неделя</option>
+            <option value="month">Месяц</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Приоритет</label>
+          <select id="filter-priority">
+            <option value="all">Любой приоритет</option>
+            <option value="low">Низкий</option>
+            <option value="medium">Средний</option>
+            <option value="high">Высокий</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Тег</label>
+          <select id="filter-tag">
+            <option value="all">Все теги</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Добавить цель</h3>
+      <div style="display: flex; flex-direction: column; gap: 10px;">
+        <input type="text" id="goal-title" placeholder="Например: Купить молоко" required>
+        
+        <select id="goal-period">
+          <option value="day">День</option>
+          <option value="week">Неделя</option>
+          <option value="month">Месяц</option>
+        </select>
+
+        <select id="goal-priority">
+          <option value="low">Низкий</option>
+          <option value="medium" selected>Средний</option>
+          <option value="high">Высокий</option>
+        </select>
+
+        <select id="goal-tag">
+          <option value="" selected>Без тега</option>
+          <option value="work">Работа</option>
+          <option value="personal">Личное</option>
+          <option value="study">Учеба</option>
+        </select>
+
+        <button onclick="addGoal()">Добавить цель</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Активные цели <span id="active-count">0</span></h3>
+      <div id="active-goals-list"></div>
+    </div>
+
+    <div class="card">
+      <h3>Выполненные цели <span id="completed-count">0</span></h3>
+      <div id="completed-goals-list"></div>
+    </div>
+  </div>
+
+  <script>
+    console.log("✅ Скрипт запущен. Начинаем работу...");
+
+    let goals = JSON.parse(localStorage.getItem('goals')) || [];
+
+    function saveAndRender() {
+      localStorage.setItem('goals', JSON.stringify(goals));
+      render();
+    }
+
+    function addGoal() {
+      const titleEl = document.getElementById('goal-title');
+      const periodEl = document.getElementById('goal-period');
+      const priorityEl = document.getElementById('goal-priority');
+      const tagEl = document.getElementById('goal-tag');
+
+      if (!titleEl.value.trim()) {
+        alert("Введите название цели!");
+        return;
+      }
+
+      const newGoal = {
+        id: Date.now(),
+        title: titleEl.value.trim(),
+        period: periodEl.value,
+        priority: priorityEl.value,
+        tag: tagEl.value,
+        completed: false
+      };
+
+      goals.push(newGoal);
+      saveAndRender();
+      titleEl.value = '';
+    }
+
+    function toggleComplete(id) {
+      const goal = goals.find(g => g.id === id);
+      if (goal) {
+        goal.completed = !goal.completed;
+        saveAndRender();
+      }
+    }
+
+    function deleteGoal(id) {
+      if (confirm("Удалить цель?")) {
+        goals = goals.filter(g => g.id !== id);
+        saveAndRender();
+      }
+    }
+
+    function render() {
+      const activeList = document.getElementById('active-goals-list');
+      const completedList = document.getElementById('completed-goals-list');
+      const activeCountEl = document.getElementById('active-count');
+      const completedCountEl = document.getElementById('completed-count');
+
+      activeList.innerHTML = '';
+      completedList.innerHTML = '';
+
+      let activeCount = 0;
+      let completedCount = 0;
+
+      if (goals.length === 0) {
+        activeList.innerHTML = '<p style="color:#777">Пока нет активных целей. Добавьте первую!</p>';
+      }
+
+      goals.forEach(goal => {
+        const card = document.createElement('div');
+        card.className = 'goal-card';
+        
+        const periodText = goal.period === 'day' ? 'День' : goal.period === 'week' ? 'Неделя' : 'Месяц';
+        const priorityText = goal.priority === 'low' ? 'Низкий' : goal.priority === 'high' ? 'Высокий' : 'Средний';
+        
+        // ГЛАВНОЕ МЕСТО: Обратные кавычки должны быть именно такими: ` ... `
+        // Если тут стоят обычные кавычки, будет ошибка SyntaxError в консоли
+        card.innerHTML = `
+          <div class="goal-info">
+            <h4>\${goal.title}</h4>
+            <div class="goal-meta">
+              <span>Приоритет: ${priorityText}</span> • <span>Период: ${periodText}</span>
+            </div>
+          </div>
+          <div class="actions">
+            <button class="btn-complete" onclick="toggleComplete(${goal.id})">${goal.completed ? 'Активна' : 'Готово'}</button>
+            <button class="btn-delete" onclick="deleteGoal(\${goal.id})">Удалить</button>
+          </div>
+        `;
+
+        if (goal.completed) {
+          completedList.appendChild(card);
+          completedCount++;
+        } else {
+          activeList.appendChild(card);
+          activeCount++;
+        }
+      });
+
+      activeCountEl.textContent = activeCount;
+      completedCountEl.textContent = completedCount;
+    }
+
+    render();
+  </script>
+</body>
+</html>
