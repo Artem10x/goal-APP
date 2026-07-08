@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Трекер Целей: Финальная версия</title>
+  <title>Трекер Целей: Версия с фото</title>
   <style>
     :root {
       --bg-color: #f0f2f5;
@@ -14,22 +14,22 @@
       --low-color: #f1c40f;
       --med-color: #f39c12;
       --high-color: #e74c3c;
-      --bg-image: none; /* Сюда будем класть картинку */
+      --bg-image: none; /* Сюда будет попадать картинка */
     }
 
     body {
       font-family: system-ui, -apple-system, sans-serif;
       background-color: var(--bg-color);
       background-image: var(--bg-image);
-      background-size: cover;
-      background-position: center;
-      background-attachment: fixed; /* Чтобы фон не "ездил" при скролле */
+      background-size: cover;       /* Растягивает картинку на весь экран */
+      background-position: center;   /* Центрирует картинку */
+      background-attachment: fixed;   /* Фиксирует фон при скролле */
       color: var(--text-color);
       margin: 0;
       padding: 0;
       display: flex;
       height: 100vh;
-      overflow: hidden;
+      overflow: hidden; /* Скрываем скролл у самого body, скроллится контент */
       transition: background-color 0.3s, background-image 0.3s;
     }
 
@@ -43,9 +43,7 @@
       flex-direction: column;
       gap: 10px;
     }
-
     .sidebar h3 { margin: 0 0 15px 0; color: #2c3e50; }
-    
     .period-btn {
       padding: 12px;
       background: transparent;
@@ -54,9 +52,7 @@
       cursor: pointer;
       text-align: left;
       font-size: 15px;
-      transition: 0.2s;
     }
-
     .period-btn:hover { background: #f8f9fa; }
     .period-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
 
@@ -64,7 +60,7 @@
     .main-content {
       flex: 1;
       padding: 20px;
-      overflow-y: auto;
+      overflow-y: auto; /* Скролл только внутри контента */
       display: flex;
       flex-direction: column;
       gap: 20px;
@@ -76,7 +72,6 @@
       align-items: center;
       margin-bottom: 20px;
     }
-
     h1 { margin: 0; font-size: 24px; color: #2c3e50; }
 
     /* Settings Menu */
@@ -92,9 +87,7 @@
       display: none;
       z-index: 1000;
     }
-
     .settings-menu.open { display: block; }
-
     .settings-section { margin-bottom: 20px; }
     .settings-section h4 { margin: 0 0 10px 0; font-size: 16px; color: #333; }
 
@@ -110,7 +103,7 @@
     }
     .theme-option.selected { border-color: #333; box-shadow: 0 0 0 2px rgba(0,0,0,0.2); }
 
-    /* Пипетка для выбора ЛЮБОГО цвета */
+    /* Color Picker Wrapper */
     .color-picker-wrapper {
       display: flex;
       align-items: center;
@@ -134,9 +127,7 @@
       border-radius: 12px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.05);
     }
-
     .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
-    
     input[type="text"], select {
       width: 100%;
       padding: 10px;
@@ -144,7 +135,6 @@
       border-radius: 6px;
       box-sizing: border-box;
     }
-
     button.main-btn {
       padding: 12px;
       background-color: var(--primary);
@@ -160,7 +150,6 @@
 
     /* --- TAG GROUPS --- */
     .tag-group { margin-bottom: 30px; }
-
     .tag-header {
       display: flex;
       align-items: center;
@@ -173,7 +162,6 @@
       font-weight: 600;
       font-size: 18px;
     }
-
     .tag-count { font-size: 14px; color: #777; }
 
     /* Goal Card */
@@ -190,12 +178,9 @@
       transition: transform 0.2s;
     }
     .goal-card:hover { transform: translateY(-2px); }
-
     .goal-info h4 { margin: 0 0 5px 0; color: #2c3e50; }
     .goal-meta { font-size: 0.85em; color: #7f8c8d; }
-
     .actions { display: flex; gap: 8px; }
-    
     .btn-sm {
       padding: 6px 12px;
       border: none;
@@ -210,7 +195,6 @@
 </head>
 <body>
 
-  <!-- Боковое меню -->
   <aside class="sidebar">
     <h3>Периоды</h3>
     <button class="period-btn active" onclick="setPeriodFilter('all')">Все цели</button>
@@ -219,16 +203,13 @@
     <button class="period-btn" onclick="setPeriodFilter('month')">Месяц</button>
   </aside>
 
-  <!-- Основной контент -->
   <main class="main-content">
     <header class="header">
       <h1>Цели и задачи</h1>
-      
       <div style="position: relative;">
         <button onclick="toggleSettings()" style="padding: 8px 15px; background: #eee; border: none; border-radius: 6px; cursor: pointer;">⚙️ Настройки</button>
         
         <div id="settings-menu" class="settings-menu">
-          <!-- Блок тем -->
           <div class="settings-section">
             <h4>Готовые темы</h4>
             <div style="display: flex; gap: 10px; margin-bottom: 15px;">
@@ -245,7 +226,6 @@
             <input type="color" id="custom-color-input" style="display: none;" onchange="setCustomColor(this.value)">
           </div>
 
-          <!-- Блок картинки -->
           <div class="settings-section">
             <h4>Фоновое изображение</h4>
             <p style="font-size: 12px; color: #777; margin-bottom: 10px;">
@@ -260,7 +240,6 @@
       </div>
     </header>
 
-    <!-- Форма добавления -->
     <div class="add-card">
       <h3>Новая цель</h3>
       <div class="form-row">
@@ -289,7 +268,6 @@
       <p style="font-size: 12px; color: #777; margin-top: 5px;">Выберите '+ Новый тег', чтобы создать свой.</p>
     </div>
 
-    <!-- Список целей -->
     <div id="goals-container"></div>
   </main>
 
@@ -301,7 +279,7 @@
       initTags();
       render();
       
-      // Восстановление сохраненных настроек
+      // Восстановление настроек
       const savedBg = localStorage.getItem('app-bg');
       if (savedBg) {
         setBackgroundImage(savedBg);
@@ -314,14 +292,10 @@
       }
 
       const savedTheme = localStorage.getItem('app-theme');
-      if (savedTheme === 'dark') {
-         setTheme('dark', '#2c3e50');
-      } else if (savedTheme === 'red') {
-         setTheme('red', '#e74c3c');
-      }
+      if (savedTheme === 'dark') setTheme('dark', '#2c3e50');
+      else if (savedTheme === 'red') setTheme('red', '#e74c3c');
     });
 
-    // --- ЛОГИКА ТЕГОВ ---
     function initTags() {
       const tagSelect = document.getElementById('goal-tag');
       const newTagInputContainer = document.getElementById('new-tag-input-container');
@@ -371,7 +345,6 @@
       tagSelect.value = tagName;
     }
 
-    // --- ДОБАВЛЕНИЕ ЦЕЛИ ---
     function addGoal() {
       const titleEl = document.getElementById('goal-title');
       const periodEl = document.getElementById('goal-period');
@@ -408,7 +381,6 @@
       titleEl.value = '';
     }
 
-    // --- ОТРИСОВКА ---
     function render() {
       const container = document.getElementById('goals-container');
       container.innerHTML = '';
@@ -515,7 +487,6 @@
       return card;
     }
 
-    // --- ФИЛЬТРЫ И МЕНЮ ---
     function setPeriodFilter(period) {
       currentPeriodFilter = period;
       document.querySelectorAll('.period-btn').forEach(btn => btn.classList.remove('active'));
@@ -530,24 +501,23 @@
 
     // --- НАСТРОЙКИ ТЕМЫ И ФОНА ---
     
-    // 1. Готовые темы
     function setTheme(name, color) {
       document.documentElement.style.setProperty('--bg-color', color);
       localStorage.setItem('app-theme', name);
-      localStorage.removeItem('app-bg-color'); // Сброс кастомного цвета при выборе темы
+      localStorage.removeItem('app-bg-color');
       closeSettings();
     }
 
-    // 2. Любой цвет (пипетка)
     function setCustomColor(color) {
       document.documentElement.style.setProperty('--bg-color', color);
       document.getElementById('custom-color-preview').style.background = color;
       localStorage.setItem('app-bg-color', color);
-      localStorage.removeItem('app-theme'); // Сброс готовой темы
+      localStorage.removeItem('app-theme');
     }
 
-    // 3. Картинка (ИСПРАВЛЕННАЯ ЛОГИКА)
     function setBackgroundImage(imageDataUrl) {
+      // ВАЖНО: Если картинка есть, мы убираем цвет фона, чтобы они не конфликтовали
+      document.documentElement.style.setProperty('--bg-color', 'transparent'); 
       document.documentElement.style.setProperty('--bg-image', `url('\${imageDataUrl}')`);
       localStorage.setItem('app-bg', imageDataUrl);
       closeSettings();
@@ -557,16 +527,36 @@
       document.getElementById('settings-menu').classList.remove('open');
     }
 
-    // Обработка загрузки файла
-    document.getElementById('bg-image-input').addEventListener('change', (e) => {
+    // --- ОБРАБОТКА ЗАГРУЗКИ ФАЙЛА ---
+    const fileInput = document.getElementById('bg-image-input');
+    fileInput.addEventListener('change', (e) => {
       const file = e.target.files;
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = (event) => {
-          setBackgroundImage(event.target.result);
-        };
-        reader.readAsDataURL(file);
+      if (!file) return;
+
+      // Проверка типа файла
+      if (!file.type.startsWith('image/')) {
+        alert('Пожалуйста, выберите файл изображения (jpg, png, gif и т.д.)');
+        return;
       }
+
+      const reader = new FileReader();
+      
+      reader.onload = (event) => {
+        try {
+          setBackgroundImage(event.target.result);
+          console.log('Картинка успешно загружена и применена!');
+        } catch (err) {
+          console.error('Ошибка при установке картинки:', err);
+          alert('Произошла ошибка при обработке изображения. Проверьте консоль (F12).');
+        }
+      };
+
+      reader.onerror = (err) => {
+        console.error('Ошибка чтения файла:', err);
+        alert('Не удалось прочитать файл. Возможно, он поврежден.');
+      };
+
+      reader.readAsDataURL(file);
     });
 
     // --- БАЗОВЫЕ ФУНКЦИИ ---
