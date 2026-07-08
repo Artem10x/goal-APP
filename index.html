@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Трекер Целей: Версия с фото</title>
+  <title>Трекер Целей: Финальная версия</title>
   <style>
     :root {
       --bg-color: #f0f2f5;
@@ -14,22 +14,22 @@
       --low-color: #f1c40f;
       --med-color: #f39c12;
       --high-color: #e74c3c;
-      --bg-image: none; /* Сюда будет попадать картинка */
+      --bg-image: none;
     }
 
     body {
       font-family: system-ui, -apple-system, sans-serif;
       background-color: var(--bg-color);
       background-image: var(--bg-image);
-      background-size: cover;       /* Растягивает картинку на весь экран */
-      background-position: center;   /* Центрирует картинку */
-      background-attachment: fixed;   /* Фиксирует фон при скролле */
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
       color: var(--text-color);
       margin: 0;
       padding: 0;
       display: flex;
       height: 100vh;
-      overflow: hidden; /* Скрываем скролл у самого body, скроллится контент */
+      overflow: hidden;
       transition: background-color 0.3s, background-image 0.3s;
     }
 
@@ -60,7 +60,7 @@
     .main-content {
       flex: 1;
       padding: 20px;
-      overflow-y: auto; /* Скролл только внутри контента */
+      overflow-y: auto;
       display: flex;
       flex-direction: column;
       gap: 20px;
@@ -272,7 +272,6 @@
   </main>
 
   <script>
-  <script>
     let goals = JSON.parse(localStorage.getItem('goals')) || [];
     let currentPeriodFilter = 'all';
     
@@ -280,7 +279,7 @@
       initTags();
       render();
       
-      // Восстановление настроек фона
+      // Восстановление настроек
       const savedBg = localStorage.getItem('app-bg');
       if (savedBg) {
         setBackgroundImage(savedBg);
@@ -500,7 +499,7 @@
       const menu = document.getElementById('settings-menu');
       if(menu) menu.classList.toggle('open');
     }
-    
+
     // --- НАСТРОЙКИ ТЕМЫ И ФОНА ---
     
     function setTheme(name, color) {
@@ -519,7 +518,7 @@
     }
 
     function setBackgroundImage(imageDataUrl) {
-      // Убираем цвет фона, если ставим картинку
+      // Если ставим картинку, убираем цвет фона, чтобы они не конфликтовали
       document.documentElement.style.setProperty('--bg-color', 'transparent'); 
       document.documentElement.style.setProperty('--bg-image', `url('\${imageDataUrl}')`);
       localStorage.setItem('app-bg', imageDataUrl);
@@ -531,24 +530,23 @@
       if(menu) menu.classList.remove('open');
     }
 
-    // --- ИСПРАВЛЕННАЯ ОБРАБОТКА ЗАГРУЗКИ ФАЙЛА ---
+    // --- ОБРАБОТКА ЗАГРУЗКИ ФАЙЛА (ИСПРАВЛЕННАЯ) ---
     const fileInput = document.getElementById('bg-image-input');
     
     if (fileInput) {
         fileInput.addEventListener('change', (e) => {
             const file = e.target.files;
             
-            // ГЛАВНАЯ ЗАЩИТА ОТ ОШИБКИ: если файла нет, просто выходим
+            // ГЛАВНАЯ ЗАЩИТА: если файла нет, просто выходим, не вызывая ошибок
             if (!file) {
-                console.log('Файл не выбран или пуст');
+                console.log('Файл не выбран');
                 return;
             }
 
-            // Дополнительная защита: проверяем тип файла только если он существует
-            if (file && file.type && !file.type.startsWith('image/')) {
+            // Проверка типа файла (теперь безопасно, так как file точно существует)
+            if (file.type && !file.type.startsWith('image/')) {
                 alert('Пожалуйста, выберите файл изображения (jpg, png, gif и т.д.)');
-                // Сбрасываем input, чтобы можно было выбрать тот же файл снова, если ошиблись
-                e.target.value = ''; 
+                e.target.value = ''; // Сброс инпута
                 return;
             }
 
@@ -556,7 +554,6 @@
             
             reader.onload = (event) => {
                 try {
-                    // Проверка, что event.target.result существует
                     if (event.target && event.target.result) {
                         setBackgroundImage(event.target.result);
                         console.log('Картинка успешно загружена и применена!');
