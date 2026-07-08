@@ -4,9 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Трекер Целей: Финальная версия</title>
-  <!-- Заглушка для favicon, чтобы убрать ошибку 404 в консоли -->
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎯</text></svg>">
-  
   <style>
     :root {
       --bg-color: #f0f2f5;
@@ -17,7 +14,7 @@
       --low-color: #f1c40f;
       --med-color: #f39c12;
       --high-color: #e74c3c;
-      --bg-image: none;
+      --bg-image: none; /* Сюда будем класть картинку */
     }
 
     body {
@@ -26,7 +23,7 @@
       background-image: var(--bg-image);
       background-size: cover;
       background-position: center;
-      background-attachment: fixed;
+      background-attachment: fixed; /* Чтобы фон не "ездил" при скролле */
       color: var(--text-color);
       margin: 0;
       padding: 0;
@@ -46,7 +43,9 @@
       flex-direction: column;
       gap: 10px;
     }
+
     .sidebar h3 { margin: 0 0 15px 0; color: #2c3e50; }
+    
     .period-btn {
       padding: 12px;
       background: transparent;
@@ -55,7 +54,9 @@
       cursor: pointer;
       text-align: left;
       font-size: 15px;
+      transition: 0.2s;
     }
+
     .period-btn:hover { background: #f8f9fa; }
     .period-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
 
@@ -75,6 +76,7 @@
       align-items: center;
       margin-bottom: 20px;
     }
+
     h1 { margin: 0; font-size: 24px; color: #2c3e50; }
 
     /* Settings Menu */
@@ -90,7 +92,9 @@
       display: none;
       z-index: 1000;
     }
+
     .settings-menu.open { display: block; }
+
     .settings-section { margin-bottom: 20px; }
     .settings-section h4 { margin: 0 0 10px 0; font-size: 16px; color: #333; }
 
@@ -106,7 +110,7 @@
     }
     .theme-option.selected { border-color: #333; box-shadow: 0 0 0 2px rgba(0,0,0,0.2); }
 
-    /* Color Picker Wrapper */
+    /* Пипетка для выбора ЛЮБОГО цвета */
     .color-picker-wrapper {
       display: flex;
       align-items: center;
@@ -130,7 +134,9 @@
       border-radius: 12px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.05);
     }
+
     .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+    
     input[type="text"], select {
       width: 100%;
       padding: 10px;
@@ -138,6 +144,7 @@
       border-radius: 6px;
       box-sizing: border-box;
     }
+
     button.main-btn {
       padding: 12px;
       background-color: var(--primary);
@@ -153,6 +160,7 @@
 
     /* --- TAG GROUPS --- */
     .tag-group { margin-bottom: 30px; }
+
     .tag-header {
       display: flex;
       align-items: center;
@@ -165,6 +173,7 @@
       font-weight: 600;
       font-size: 18px;
     }
+
     .tag-count { font-size: 14px; color: #777; }
 
     /* Goal Card */
@@ -181,9 +190,12 @@
       transition: transform 0.2s;
     }
     .goal-card:hover { transform: translateY(-2px); }
+
     .goal-info h4 { margin: 0 0 5px 0; color: #2c3e50; }
     .goal-meta { font-size: 0.85em; color: #7f8c8d; }
+
     .actions { display: flex; gap: 8px; }
+    
     .btn-sm {
       padding: 6px 12px;
       border: none;
@@ -198,6 +210,7 @@
 </head>
 <body>
 
+  <!-- Боковое меню -->
   <aside class="sidebar">
     <h3>Периоды</h3>
     <button class="period-btn active" onclick="setPeriodFilter('all')">Все цели</button>
@@ -206,13 +219,16 @@
     <button class="period-btn" onclick="setPeriodFilter('month')">Месяц</button>
   </aside>
 
+  <!-- Основной контент -->
   <main class="main-content">
     <header class="header">
       <h1>Цели и задачи</h1>
+      
       <div style="position: relative;">
         <button onclick="toggleSettings()" style="padding: 8px 15px; background: #eee; border: none; border-radius: 6px; cursor: pointer;">⚙️ Настройки</button>
         
         <div id="settings-menu" class="settings-menu">
+          <!-- Блок тем -->
           <div class="settings-section">
             <h4>Готовые темы</h4>
             <div style="display: flex; gap: 10px; margin-bottom: 15px;">
@@ -229,13 +245,13 @@
             <input type="color" id="custom-color-input" style="display: none;" onchange="setCustomColor(this.value)">
           </div>
 
+          <!-- Блок картинки -->
           <div class="settings-section">
             <h4>Фоновое изображение</h4>
             <p style="font-size: 12px; color: #777; margin-bottom: 10px;">
               Картинка будет поверх цвета фона. Если хотите убрать картинку, просто очистите выбор файла.
             </p>
-            <!-- Исправленный input: добавлен класс и обработчик -->
-            <input type="file" class="custom-image-input" id="bg-image-input" accept="image/*" style="display:none;" onchange="handleImageUpload(event)">
+            <input type="file" class="custom-image-input" id="bg-image-input" accept="image/*" style="display:none;">
             <label for="bg-image-input" class="upload-label" style="display: block; margin-top: 5px; padding: 10px; background: #f8f9fa; border: 1px dashed #ccc; border-radius: 6px; text-align: center; cursor: pointer; font-size: 14px;">
               🖼 Загрузить фото
             </label>
@@ -244,6 +260,7 @@
       </div>
     </header>
 
+    <!-- Форма добавления -->
     <div class="add-card">
       <h3>Новая цель</h3>
       <div class="form-row">
@@ -272,6 +289,7 @@
       <p style="font-size: 12px; color: #777; margin-top: 5px;">Выберите '+ Новый тег', чтобы создать свой.</p>
     </div>
 
+    <!-- Список целей -->
     <div id="goals-container"></div>
   </main>
 
@@ -283,7 +301,7 @@
       initTags();
       render();
       
-      // Восстановление настроек фона
+      // Восстановление сохраненных настроек
       const savedBg = localStorage.getItem('app-bg');
       if (savedBg) {
         setBackgroundImage(savedBg);
@@ -292,87 +310,212 @@
       const savedColor = localStorage.getItem('app-bg-color');
       if (savedColor) {
         document.documentElement.style.setProperty('--bg-color', savedColor);
-        const preview = document.getElementById('custom-color-preview');
-        if(preview) preview.style.background = savedColor;
+        document.getElementById('custom-color-preview').style.background = savedColor;
+      }
+
+      const savedTheme = localStorage.getItem('app-theme');
+      if (savedTheme === 'dark') {
+         setTheme('dark', '#2c3e50');
+      } else if (savedTheme === 'red') {
+         setTheme('red', '#e74c3c');
       }
     });
 
-    // --- ЛОГИКА НАСТРОЕК И ИСПРАВЛЕННАЯ ЗАГРУЗКА КАРТИНКИ ---
-
-    function toggleSettings() {
-      const menu = document.getElementById('settings-menu');
-      menu.classList.toggle('open');
-    }
-
-    function setTheme(name, color) {
-      document.documentElement.style.setProperty('--bg-color', color);
-      localStorage.setItem('app-theme', name);
-      localStorage.setItem('app-bg-color', color);
-      closeSettings();
-    }
-
-    function setCustomColor(color) {
-      document.documentElement.style.setProperty('--bg-color', color);
-      const preview = document.getElementById('custom-color-preview');
-      if(preview) preview.style.background = color;
-      localStorage.setItem('app-bg-color', color);
-      closeSettings();
-    }
-
-    // ИСПРАВЛЕННАЯ ФУНКЦИЯ ЗАГРУЗКИ
-    function handleImageUpload(event) {
-      const file = event.target.files; // Берем первый файл из списка
-      
-      if (!file) {
-        // Если пользователь нажал "Отмена", просто выходим, не вызывая ошибку
-        return; 
-      }
-
-      const reader = new FileReader();
-      
-      reader.onload = function(e) {
-        const imageUrl = e.target.result;
-        setBackgroundImage(imageUrl);
-        localStorage.setItem('app-bg', imageUrl);
-        closeSettings();
-      };
-
-      reader.onerror = function() {
-        console.error("Ошибка чтения файла");
-      };
-
-      // Читаем как DataURL (строку base64), которую можно вставить в CSS
-      reader.readAsDataURL(file);
-    }
-
-    function setBackgroundImage(url) {
-      document.documentElement.style.setProperty('--bg-image', `url('\${url}')`);
-    }
-
-    function closeSettings() {
-      const menu = document.getElementById('settings-menu');
-      menu.classList.remove('open');
-    }
-
-    // --- ЛОГИКА ЦЕЛЕЙ (без изменений, работает стабильно) ---
-
+    // --- ЛОГИКА ТЕГОВ ---
     function initTags() {
       const tagSelect = document.getElementById('goal-tag');
-      if (!tagSelect) return;
+      const newTagInputContainer = document.getElementById('new-tag-input-container');
+      const newTagInput = document.getElementById('new-tag-input');
       
-      // Получаем все уникальные теги из сохраненных целей
-      const existingTags = [...new Set(goals.map(g => g.tag).filter(t => t && t !== '+new'))];
+      const defaultTags = ['Работа', 'Личное', 'Учеба', 'Дом', 'Спорт'];
+      defaultTags.forEach(tag => {
+        const opt = document.createElement('option');
+        opt.value = tag;
+        opt.textContent = tag;
+        tagSelect.appendChild(opt);
+      });
+
+      tagSelect.addEventListener('change', (e) => {
+        if (e.target.value === '+new') {
+          newTagInputContainer.style.display = 'block';
+          newTagInput.focus();
+          tagSelect.value = ''; 
+        } else {
+          newTagInputContainer.style.display = 'none';
+          newTagInput.value = '';
+        }
+      });
+
+      newTagInput.addEventListener('blur', () => {
+        const val = newTagInput.value.trim();
+        if (val) createNewTag(val);
+      });
       
-      tagSelect.innerHTML = '<option value="" selected>Без тега</option><option value="+new">+ Новый тег...</option>';
-      
-      existingTags.forEach(tag => {
-        const option = document.createElement('option');
-        option.value = tag;
-        option.textContent = tag;
-        tagSelect.appendChild(option);
+      newTagInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+          const val = newTagInput.value.trim();
+          if (val) createNewTag(val);
+        }
       });
     }
 
+    function createNewTag(tagName) {
+      const tagSelect = document.getElementById('goal-tag');
+      const exists = Array.from(tagSelect.options).some(opt => opt.value === tagName);
+      if (!exists) {
+        const opt = document.createElement('option');
+        opt.value = tagName;
+        opt.textContent = tagName;
+        tagSelect.appendChild(opt);
+      }
+      tagSelect.value = tagName;
+    }
+
+    // --- ДОБАВЛЕНИЕ ЦЕЛИ ---
+    function addGoal() {
+      const titleEl = document.getElementById('goal-title');
+      const periodEl = document.getElementById('goal-period');
+      const priorityEl = document.getElementById('goal-priority');
+      const tagEl = document.getElementById('goal-tag');
+      const newTagInput = document.getElementById('new-tag-input');
+      const newTagInputContainer = document.getElementById('new-tag-input-container');
+      
+      let tagValue = tagEl.value;
+      if (!tagValue && newTagInput.value.trim()) {
+        tagValue = newTagInput.value.trim();
+        createNewTag(tagValue);
+        tagEl.value = tagValue;
+        newTagInputContainer.style.display = 'none';
+        newTagInput.value = '';
+      }
+
+      if (!titleEl.value.trim()) {
+        alert("Введите название цели!");
+        return;
+      }
+
+      const newGoal = {
+        id: Date.now(),
+        title: titleEl.value.trim(),
+        period: periodEl.value,
+        priority: priorityEl.value,
+        tag: tagValue,
+        completed: false
+      };
+
+      goals.push(newGoal);
+      saveAndRender();
+      titleEl.value = '';
+    }
+
+    // --- ОТРИСОВКА ---
+    function render() {
+      const container = document.getElementById('goals-container');
+      container.innerHTML = '';
+
+      const filteredGoals = currentPeriodFilter === 'all' 
+        ? goals 
+        : goals.filter(g => g.period === currentPeriodFilter);
+
+      if (filteredGoals.length === 0) {
+        container.innerHTML = '<p style="color:#777; text-align:center;">Нет целей для этого периода</p>';
+        return;
+      }
+
+      const groups = {};
+      filteredGoals.forEach(goal => {
+        const tag = goal.tag || 'Без тега';
+        if (!groups[tag]) groups[tag] = [];
+        groups[tag].push(goal);
+      });
+
+      const tagColors = {
+        'Работа': '#3498db', 'Личное': '#9b59b6', 'Учеба': '#e67e22',
+        'Дом': '#2ecc71', 'Спорт': '#e74c3c', 'Без тега': '#95a5a6'
+      };
+
+      for (const [tag, list] of Object.entries(groups)) {
+        const groupDiv = document.createElement('div');
+        groupDiv.className = 'tag-group';
+
+        const header = document.createElement('div');
+        header.className = 'tag-header';
+        const color = tagColors[tag] || '#333';
+        header.style.borderLeftColor = color;
+        
+        const headerSpan = document.createElement('span');
+        headerSpan.textContent = tag;
+        
+        const countSpan = document.createElement('span');
+        countSpan.className = 'tag-count';
+        countSpan.textContent = list.length + ' шт.';
+
+        header.appendChild(headerSpan);
+        header.appendChild(countSpan);
+        groupDiv.appendChild(header);
+
+        list.forEach(goal => {
+          const card = createGoalCard(goal, color);
+          groupDiv.appendChild(card);
+        });
+
+        container.appendChild(groupDiv);
+      }
+    }
+
+    function createGoalCard(goal, tagColor) {
+      const card = document.createElement('div');
+      card.className = 'goal-card';
+      
+      const priorityColor = {
+        'low': 'var(--low-color)',
+        'medium': 'var(--med-color)',
+        'high': 'var(--high-color)'
+      };
+      card.style.borderLeftColor = priorityColor[goal.priority];
+
+      const infoDiv = document.createElement('div');
+      infoDiv.className = 'goal-info';
+
+      const titleH4 = document.createElement('h4');
+      titleH4.textContent = goal.title;
+
+      const metaDiv = document.createElement('div');
+      metaDiv.className = 'goal-meta';
+      
+      let periodText = 'День';
+      if (goal.period === 'week') periodText = 'Неделя';
+      if (goal.period === 'month') periodText = 'Месяц';
+      
+      let metaText = 'Период: ' + periodText;
+      if (goal.tag) metaText += ' • Тег: ' + goal.tag;
+      metaDiv.textContent = metaText;
+
+      infoDiv.appendChild(titleH4);
+      infoDiv.appendChild(metaDiv);
+
+      const actionsDiv = document.createElement('div');
+      actionsDiv.className = 'actions';
+
+      const btnComplete = document.createElement('button');
+      btnComplete.className = 'btn-sm btn-complete';
+      btnComplete.textContent = goal.completed ? 'Активна' : 'Готово';
+      btnComplete.onclick = () => toggleComplete(goal.id);
+
+      const btnDelete = document.createElement('button');
+      btnDelete.className = 'btn-sm btn-delete';
+      btnDelete.textContent = 'Удалить';
+      btnDelete.onclick = () => deleteGoal(goal.id);
+
+      actionsDiv.appendChild(btnComplete);
+      actionsDiv.appendChild(btnDelete);
+
+      card.appendChild(infoDiv);
+      card.appendChild(actionsDiv);
+      return card;
+    }
+
+    // --- ФИЛЬТРЫ И МЕНЮ ---
     function setPeriodFilter(period) {
       currentPeriodFilter = period;
       document.querySelectorAll('.period-btn').forEach(btn => btn.classList.remove('active'));
@@ -380,53 +523,54 @@
       render();
     }
 
-    function addGoal() {
-      const title = document.getElementById('goal-title').value;
-      const period = document.getElementById('goal-period').value;
-      const priority = document.getElementById('goal-priority').value;
-      const tagSelect = document.getElementById('goal-tag');
-      let tag = tagSelect.value;
+    function toggleSettings() {
+      const menu = document.getElementById('settings-menu');
+      menu.classList.toggle('open');
+    }
 
-      // Логика создания нового тега
-      if (tag === '+new') {
-        const newTagInput = document.getElementById('new-tag-input');
-        tag = newTagInput.value.trim();
-        if (!tag) {
-          alert('Введите название нового тега!');
-          return;
-        }
-        // Добавляем новый тег в выпадающий список
-        const option = document.createElement('option');
-        option.value = tag;
-        option.textContent = tag;
-        tagSelect.appendChild(option);
-        tagSelect.value = tag;
-        document.getElementById('new-tag-input-container').style.display = 'none';
+    // --- НАСТРОЙКИ ТЕМЫ И ФОНА ---
+    
+    // 1. Готовые темы
+    function setTheme(name, color) {
+      document.documentElement.style.setProperty('--bg-color', color);
+      localStorage.setItem('app-theme', name);
+      localStorage.removeItem('app-bg-color'); // Сброс кастомного цвета при выборе темы
+      closeSettings();
+    }
+
+    // 2. Любой цвет (пипетка)
+    function setCustomColor(color) {
+      document.documentElement.style.setProperty('--bg-color', color);
+      document.getElementById('custom-color-preview').style.background = color;
+      localStorage.setItem('app-bg-color', color);
+      localStorage.removeItem('app-theme'); // Сброс готовой темы
+    }
+
+    // 3. Картинка (ИСПРАВЛЕННАЯ ЛОГИКА)
+    function setBackgroundImage(imageDataUrl) {
+      document.documentElement.style.setProperty('--bg-image', `url('\${imageDataUrl}')`);
+      localStorage.setItem('app-bg', imageDataUrl);
+      closeSettings();
+    }
+
+    function closeSettings() {
+      document.getElementById('settings-menu').classList.remove('open');
+    }
+
+    // Обработка загрузки файла
+    document.getElementById('bg-image-input').addEventListener('change', (e) => {
+      const file = e.target.files;
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          setBackgroundImage(event.target.result);
+        };
+        reader.readAsDataURL(file);
       }
+    });
 
-      const newGoal = {
-        id: Date.now(),
-        title,
-        period,
-        priority,
-        tag,
-        completed: false
-      };
-
-      goals.push(newGoal);
-      saveAndRender();
-      
-      // Очистка формы
-      document.getElementById('goal-title').value = '';
-    }
-
-    function saveAndRender() {
-      localStorage.setItem('goals', JSON.stringify(goals));
-      initTags();
-      render();
-    }
-
-    function completeGoal(id) {
+    // --- БАЗОВЫЕ ФУНКЦИИ ---
+    function toggleComplete(id) {
       const goal = goals.find(g => g.id === id);
       if (goal) {
         goal.completed = !goal.completed;
@@ -435,77 +579,15 @@
     }
 
     function deleteGoal(id) {
-      if(confirm('Удалить эту цель?')) {
+      if (confirm("Удалить цель?")) {
         goals = goals.filter(g => g.id !== id);
         saveAndRender();
       }
     }
 
-    function render() {
-      const container = document.getElementById('goals-container');
-      container.innerHTML = '';
-
-      const filteredGoals = goals.filter(g => {
-        if (currentPeriodFilter === 'all') return true;
-        return g.period === currentPeriodFilter;
-      });
-
-      if (filteredGoals.length === 0) {
-        container.innerHTML = '<p style="text-align:center; color:#777;">Нет целей для этого периода</p>';
-        return;
-      }
-
-      // Группировка по тегам
-      const groups = {};
-      filteredGoals.forEach(g => {
-        const key = g.tag || 'Без тега';
-        if (!groups[key]) groups[key] = [];
-        groups[key].push(g);
-      });
-
-      for (const [tag, items] of Object.entries(groups)) {
-        const groupDiv = document.createElement('div');
-        groupDiv.className = 'tag-group';
-        
-        const header = document.createElement('div');
-        header.className = 'tag-header';
-        header.innerHTML = `
-          <span>\${tag}</span>
-          <span class="tag-count">\${items.length} шт.</span>
-        `;
-        
-        groupDiv.appendChild(header);
-
-        items.forEach(goal => {
-          const card = document.createElement('div');
-          card.className = 'goal-card';
-          
-          // Цвет полоски слева в зависимости от приоритета
-          let borderColor = '#ccc';
-          if (goal.priority === 'low') borderColor = 'var(--low-color)';
-          if (goal.priority === 'medium') borderColor = 'var(--med-color)';
-          if (goal.priority === 'high') borderColor = 'var(--high-color)';
-
-          card.style.borderLeftColor = borderColor;
-
-          card.innerHTML = `
-            <div class="goal-info">
-              <h4>\${goal.title}</h4>
-              <div class="goal-meta">
-                Период: ${goal.period}, Приоритет: ${goal.priority}
-                \${goal.completed ? '<span style="color:green;">✅ Выполнено</span>' : ''}
-              </div>
-            </div>
-            <div class="actions">
-              ${!goal.completed ? `<button class="btn-sm btn-complete" onclick="completeGoal(${goal.id})">Готово</button>` : ''}
-              <button class="btn-sm btn-delete" onclick="deleteGoal(\${goal.id})">🗑</button>
-            </div>
-          `;
-          groupDiv.appendChild(card);
-        });
-
-        container.appendChild(groupDiv);
-      }
+    function saveAndRender() {
+      localStorage.setItem('goals', JSON.stringify(goals));
+      render();
     }
   </script>
 </body>
