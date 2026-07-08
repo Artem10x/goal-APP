@@ -272,6 +272,7 @@
   </main>
 
   <script>
+  <script>
     let goals = JSON.parse(localStorage.getItem('goals')) || [];
     let currentPeriodFilter = 'all';
     
@@ -279,7 +280,7 @@
       initTags();
       render();
       
-      // Восстановление настроек
+      // Восстановление настроек фона
       const savedBg = localStorage.getItem('app-bg');
       if (savedBg) {
         setBackgroundImage(savedBg);
@@ -288,7 +289,8 @@
       const savedColor = localStorage.getItem('app-bg-color');
       if (savedColor) {
         document.documentElement.style.setProperty('--bg-color', savedColor);
-        document.getElementById('custom-color-preview').style.background = savedColor;
+        const preview = document.getElementById('custom-color-preview');
+        if(preview) preview.style.background = savedColor;
       }
 
       const savedTheme = localStorage.getItem('app-theme');
@@ -496,9 +498,9 @@
 
     function toggleSettings() {
       const menu = document.getElementById('settings-menu');
-      menu.classList.toggle('open');
+      if(menu) menu.classList.toggle('open');
     }
-
+    
     // --- НАСТРОЙКИ ТЕМЫ И ФОНА ---
     
     function setTheme(name, color) {
@@ -510,13 +512,14 @@
 
     function setCustomColor(color) {
       document.documentElement.style.setProperty('--bg-color', color);
-      document.getElementById('custom-color-preview').style.background = color;
+      const preview = document.getElementById('custom-color-preview');
+      if(preview) preview.style.background = color;
       localStorage.setItem('app-bg-color', color);
       localStorage.removeItem('app-theme');
     }
 
     function setBackgroundImage(imageDataUrl) {
-      // ВАЖНО: Если картинка есть, мы убираем цвет фона, чтобы они не конфликтовали
+      // Убираем цвет фона, если ставим картинку
       document.documentElement.style.setProperty('--bg-color', 'transparent'); 
       document.documentElement.style.setProperty('--bg-image', `url('\${imageDataUrl}')`);
       localStorage.setItem('app-bg', imageDataUrl);
@@ -524,40 +527,56 @@
     }
 
     function closeSettings() {
-      document.getElementById('settings-menu').classList.remove('open');
+      const menu = document.getElementById('settings-menu');
+      if(menu) menu.classList.remove('open');
     }
 
-    // --- ОБРАБОТКА ЗАГРУЗКИ ФАЙЛА ---
+    // --- ИСПРАВЛЕННАЯ ОБРАБОТКА ЗАГРУЗКИ ФАЙЛА ---
     const fileInput = document.getElementById('bg-image-input');
-    fileInput.addEventListener('change', (e) => {
-      const file = e.target.files;
-      if (!file) return;
+    
+    if (fileInput) {
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files;
+            
+            // ГЛАВНАЯ ЗАЩИТА ОТ ОШИБКИ: если файла нет, просто выходим
+            if (!file) {
+                console.log('Файл не выбран или пуст');
+                return;
+            }
 
-      // Проверка типа файла
-      if (!file.type.startsWith('image/')) {
-        alert('Пожалуйста, выберите файл изображения (jpg, png, gif и т.д.)');
-        return;
-      }
+            // Дополнительная защита: проверяем тип файла только если он существует
+            if (file && file.type && !file.type.startsWith('image/')) {
+                alert('Пожалуйста, выберите файл изображения (jpg, png, gif и т.д.)');
+                // Сбрасываем input, чтобы можно было выбрать тот же файл снова, если ошиблись
+                e.target.value = ''; 
+                return;
+            }
 
-      const reader = new FileReader();
-      
-      reader.onload = (event) => {
-        try {
-          setBackgroundImage(event.target.result);
-          console.log('Картинка успешно загружена и применена!');
-        } catch (err) {
-          console.error('Ошибка при установке картинки:', err);
-          alert('Произошла ошибка при обработке изображения. Проверьте консоль (F12).');
-        }
-      };
+            const reader = new FileReader();
+            
+            reader.onload = (event) => {
+                try {
+                    // Проверка, что event.target.result существует
+                    if (event.target && event.target.result) {
+                        setBackgroundImage(event.target.result);
+                        console.log('Картинка успешно загружена и применена!');
+                    } else {
+                        alert('Не удалось прочитать данные изображения.');
+                    }
+                } catch (err) {
+                    console.error('Ошибка при установке картинки:', err);
+                    alert('Произошла ошибка при обработке изображения.');
+                }
+            };
 
-      reader.onerror = (err) => {
-        console.error('Ошибка чтения файла:', err);
-        alert('Не удалось прочитать файл. Возможно, он поврежден.');
-      };
+            reader.onerror = (err) => {
+                console.error('Ошибка чтения файла:', err);
+                alert('Не удалось прочитать файл. Возможно, он поврежден.');
+            };
 
-      reader.readAsDataURL(file);
-    });
+            reader.readAsDataURL(file);
+        });
+    }
 
     // --- БАЗОВЫЕ ФУНКЦИИ ---
     function toggleComplete(id) {
